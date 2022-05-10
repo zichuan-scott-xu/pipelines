@@ -12,11 +12,16 @@ description: |
     problem_type (str):
       The problem type of the metrics being imported to the VertexModel.
         `classification`, `regression`, and `forecasting` are the currently supported problem types.
+    display_name (str):
+      The display name for the uploaded model evaluation resource.
 inputs:
   - {name: metrics, type: Metrics}
   - {name: explanation, type: Metrics, optional: True}
   - {name: model, type: google.VertexModel}
   - {name: problem_type, type: String}
+  - {name: display_name, type: String, optional: True}
+  - {name: dataset_path, type: String, optional: True}
+  - {name: dataset_type, type: String, optional: True}
 outputs:
 - {name: gcp_resources, type: String}
 implementation:
@@ -35,7 +40,24 @@ implementation:
           - "{{$.inputs.artifacts['explanation'].metadata['explanation_gcs_path']}}"
       - --problem_type
       - {inputValue: problem_type}
+      - if:
+          cond: {isPresent: display_name}
+          then:
+          - --display_name
+          - {inputValue: display_name}
+      - if:
+          cond: {isPresent: dataset_path}
+          then:
+          - --display_name
+          - {inputValue: dataset_path}
+      - if:
+          cond: {isPresent: dataset_type}
+          then:
+          - --display_name
+          - {inputValue: display_type}
       - --model_name
       - "{{$.inputs.artifacts['model'].metadata['resourceName']}}"
+      - --pipeline_job_id
+      - "{{$.pipeline_job_uuid}}"
       - --gcp_resources
       - {outputPath: gcp_resources}
