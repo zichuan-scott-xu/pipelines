@@ -287,7 +287,7 @@ func (r *ResourceManager) CreatePipeline(name string, description string, namesp
 	}
 
 	// Store the pipeline file to a path dependent on pipeline version
-	err = r.objectStore.AddFile(tmpl.Bytes(),
+	err = r.objectStore.AddFile(pipelineFile,
 		r.objectStore.GetPipelineKey(fmt.Sprint(newPipeline.DefaultVersion.UUID)))
 	if err != nil {
 		return nil, util.Wrap(err, "Create pipeline failed")
